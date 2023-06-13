@@ -1,0 +1,38 @@
+[Main]
+Name = Swarmer
+Use = Swarm urgent replacement node
+Contact = wook
+Account = 3217-7580-4397
+# Sequence for creation, in this case, ec2 creates subsidiary volumes;
+Sequence=swarmer,publish
+Vpc = vpc-0ab88f4af23dfdcd9
+Kms-Key-Id = 38432b54-fe8c-456d-915e-513a17fee97c
+Kms-Key-ARN = arn:aws:kms:us-west-1:321775804397:key/38432b54-fe8c-456d-915e-513a17fee97c
+
+[swarmer]
+Kind = ec2
+## Vpc=vpc_id
+Type = t3.large
+## Volumes get instantiated and attached from here, otherwise ignored;
+Volumes = rootVol
+Subnet = subnet-0862273d37c026378
+Sg = sg-0fcb772914eee5c3a
+
+[rootVol]
+## ebs is implied from ec2 reference;
+Kind = ebs
+Type = gp3
+Size = 60
+Encrypted = true
+# IOPS = 3000
+# Throughput = 125
+## If snapshot is present, restore from it;
+Snapshot = snap-0d3f5d4fb546b5ed9
+
+[publish]
+Kind = route53
+## Make a (Route53) DNS entry that points to this;
+Name = swarmer.sphent.com
+## Use IP address associate with stanzas IPv4
+publicize = ec2
+
