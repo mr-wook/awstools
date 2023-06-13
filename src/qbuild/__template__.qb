@@ -1,0 +1,15 @@
+[Main]
+Name=[name tag value]
+Use=[description] 
+Contact=[who]
+(Account = id)
+Sequence=stanza,stanza
+
+[Ec2!instance!i]
+Vpc=vpc_id
+Type=
+Volumes=stanza,stanza
+Subnet=
+Sg=
+
+
