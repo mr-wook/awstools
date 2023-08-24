@@ -3,7 +3,7 @@
 tui3.py -- A simple Text UI support library;
 """
 
-# Copyright (c) 2019, 2020 Wook
+# Copyright (c) 2019, 2020, 2023 Wook
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
