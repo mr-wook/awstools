@@ -61,6 +61,8 @@ class SGRule(Resource):
 class Subnet(Resource):
     pass
 
+class Tag(Resource):
+    pass
 
 class VPC(Resource):
     pass
