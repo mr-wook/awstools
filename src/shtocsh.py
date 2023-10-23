@@ -1,5 +1,5 @@
 #!/bin/env python3
-# shtocsh -- convert SOME sh syntax to csh syntax to support using pastes;
+"""shtocsh -- convert SOME sh syntax to csh syntax to support using pastes;"""
 
 if True:
     import os
