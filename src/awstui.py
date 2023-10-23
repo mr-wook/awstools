@@ -161,7 +161,7 @@ if __name__== "__main__":
             self._helpers = dict()
             self._available = dict(EC2=EC2)
             self._region_name = 'us-west-1'
-            self._using = None
+            self._using = [ ]
             tui.add("?", self.show_commands)
             tui.add("describe", self.describe)
             tui.add("exit", self.quit)
@@ -173,6 +173,7 @@ if __name__== "__main__":
             tui.add("quit", self.quit)
             tui.add("region", self.set_region_default)
             tui.add("show", self.show_something)
+            tui.add("tfsave", self._tf_save)
 
         def describe(self, ui, arg):
             # Replace this with a match once we catch up to Python3.10 or later;
@@ -192,7 +193,7 @@ if __name__== "__main__":
                 print("No environment vars setup, assume .aws/credentials is setup correctly")
 
         def ls(self, ui, arg):
-            if self._using == "EC2":
+            if self._using[-1] == "EC2":
                 # Get all current region EC2 data;
                 # print(" ".join(dir(self._helpers['EC2']['instance_'].client)))
                 ec2 = self._helpers['EC2']['instance_']
@@ -249,10 +250,13 @@ if __name__== "__main__":
         def show_something(self, ui, arg):
             raise NotImplementedError
 
+        def tf_save(self, ui, arg):
+            raise NotImplementedError
+
         def use_some(self, ui, arg):
             if arg.lower() == "ec2":
                 self._make_available("EC2")
-                self._using = "EC2"
+                self._using.insert(0, "EC2")
                 # Now parse for instance id?
                 print("Using ec2")
                 return "EC2"
