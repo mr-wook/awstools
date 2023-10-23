@@ -4,23 +4,46 @@ if True:
     import boto3
     from   collections import OrderedDict
     import os
+    import re
     import sys
     import time
 
-    import wookutil3
+    # import wookutil3
+
 
 class Gather:
+    DIR_REX = r"/(?P<prefix>.*?)/old(?P<suffix>$|/)"
     def __init__(self, top, **kwa):
         self._top = top
         self._excluded_exts = kwa.get('excluded_exts', [ ".cin", ".dpx", ".exr", ".o" ])
+        self._excluded_dirs = kwa.get('excluded_dirs', [ "old" ])
+        self._edrexs = [ ]
+        for dirnm in self._excluded_dirs:
+            rex = re.compile(f"/(?P<prefix>.*?)/{dirnm}(?P<suffix>$|/)")
+            self._edrexs.append(rex)
         # print(f"Gather.init: top={top}")
         # os.chdir(top)
-        self._work = [ ]
+        self._work = self.findwork(top)
+
+    def __iter__(self):
+        for fp in self._work:
+            yield fp
+
+    def excluded_dir(self, nm):
+        for rex in self._edrexs:
+            if rex.match(nm):
+                return True
+        return False
+
+    def findwork(self, top):
+        works = [ ]
         for dirnm, stuff, flist in os.walk(top):
             # print(f"{dirnm}/{fn}")
             l_top = len(top)
             if dirnm.startswith(top):
                 dirnm = dirnm[l_top + 1:]
+            if self.excluded_dir(dirnm):
+                continue
             for fn in flist:
                 ext = os.path.splitext(fn)[-1]
                 if ext in self._excluded_exts:
@@ -31,12 +54,9 @@ class Gather:
                 else:
                     work = fn
                 # print(f"Gather: work={work}") ; time.sleep(0.25)
-                self._work.append(work)
-        self._work.sort()
-
-    def __iter__(self):
-        for fp in self._work:
-            yield fp
+                works.append(work)
+        works.sort()
+        return works
 
     @property
     def work(self):
@@ -62,7 +82,14 @@ if __name__ == "__main__":
         def __getitem__(self, i):
             return self._done[i]
 
-        def human(self, n):
+        def clock_time(self, seconds):
+            hours = int(seconds // 3600)
+            seconds = seconds % 3600
+            minutes = int(seconds // 60)
+            seconds = int(seconds % 60)
+            return f"{hours}:{minutes:02d}:{seconds:02d}"
+
+        def human_size(self, n):
             def right_str(n, mag, label):
                 v = n / mag
                 s = f"{v:.2f} {label}"
@@ -143,5 +170,5 @@ if __name__ == "__main__":
     elapsed = end - start
     total_xfer = app.done_size
     bps = total_xfer / elapsed
-    bpU = app.human(bps)
-    print(f"Total files transferred: {len(app)} Total data transferred: {total_xfer} {elapsed:.2f} seconds ({bpU}/sec)")
+    bpU = app.human_size(bps)
+    print(f"Total files transferred: {len(app)}; Total data transferred: {app.human_size(total_xfer)}; {elapsed:.2f} seconds; ({bpU}/sec)")
