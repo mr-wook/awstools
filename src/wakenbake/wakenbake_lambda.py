@@ -96,6 +96,25 @@ Instances.tbl:
     <instance-name>[/rectype:{A,AAAA,?CNAME?}] <public hostnames> [<private hostnames>]
 
 Weirdos.tbl
-    # User, Encrypted PW, list of hosts this user can wake-n-bake;
-   <username> <encrypted-pw> host,host,host...
+  # User, Encrypted PW, list of hosts this user can wake-n-bake;
+  <username> <encrypted-pw> host,host,host...
+  stuff = [ chr(i) for i in range(ord('A'), ord('Z') + 1)]
+  stuff += [ chr(i) for i in range(ord('a'), ord('z') + 1)]
+  stuff += [ '*', '$', '@', '!', '%', '^', '.' ]
+  lstuff = len(stuff)
+  def bn2str(bn):
+    olist = [ ]
+    while bn != 0:
+      bn, offset = divmod(bn, lstuff)
+      olist.append(stuff[offset])
+    return "".join(olist)
+
+>>> def pw(s, seed=178246875):
+  bytes = s.encode()
+  r = 0
+  for b in bytes:
+    r = r << 8
+    r += int(b)
+  r *= seed
+  return bn2str(r)
 """
